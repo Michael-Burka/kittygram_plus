@@ -1,16 +1,23 @@
 from rest_framework import serializers
 
-from .models import Cat, Owner
+from .models import Achievement, Cat, Owner
+
+
+class AchievementSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Achievement
+        fields = ('id', 'name')
 
 
 class CatSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField(many=False, read_only=True)
+    achievements = AchievementSerializer(many=True, read_only=True)
 
     class Meta:
         model = Cat
-        fields = ('id', 'name', 'color', 'birth_year', 'owner')
+        fields = ('id', 'name', 'color', 'birth_year', 'owner', 'achievements')
 
-class AchievementSerializer
 
 class OwnerSerializer(serializers.ModelSerializer):
     cats = serializers.StringRelatedField(many=True, read_only=True)
