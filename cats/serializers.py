@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Achievement, Cat, Owner
+from .models import Achievement, AchievementCat, Cat, Owner
 
 
 class AchievementSerializer(serializers.ModelSerializer):
@@ -11,12 +11,24 @@ class AchievementSerializer(serializers.ModelSerializer):
 
 
 class CatSerializer(serializers.ModelSerializer):
-    owner = serializers.StringRelatedField(many=False, read_only=True)
-    achievements = AchievementSerializer(many=True, read_only=True)
+    achievements = AchievementSerializer(many=True)
 
     class Meta:
         model = Cat
         fields = ('id', 'name', 'color', 'birth_year', 'owner', 'achievements')
+
+    def create(self, validated_data):
+        achievements = validated_data.pop('achievements')
+
+        cat = Cat.objects.create(**validated_data)
+
+        for achievement in achievements:
+            current_achievement, status = Achievement.objects.get_or_create(
+                **achievement)
+
+            AchievementCat.objects.create(
+                achievement=current_achievement, cat=cat)
+        return cat
 
 
 class OwnerSerializer(serializers.ModelSerializer):
