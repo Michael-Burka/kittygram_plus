@@ -33,3 +33,4 @@ class AchievementCat(models.Model):
 
     def __str__(self):
         return f'{self.achievement} {self.cat}'
+    
